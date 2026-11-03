@@ -1,0 +1,11 @@
+package com.api.models.response;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Data;
+
+@Data
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class UpdateUserResponse {
+    private String name;
+    private String job;
+    private String updatedAt;
+}

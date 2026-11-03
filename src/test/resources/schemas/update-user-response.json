@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "UpdateUserResponse",
+  "type": "object",
+  "required": ["name", "job", "updatedAt"],
+  "properties": {
+    "name": { "type": "string" },
+    "job": { "type": "string" },
+    "updatedAt": { "type": "string", "format": "date-time" }
+  }
+}

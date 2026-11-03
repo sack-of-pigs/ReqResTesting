@@ -1,0 +1,58 @@
+plugins {
+    id 'java'
+    id 'io.qameta.allure' version '4.2.0'
+}
+
+group = 'com.api'
+version = '1.0-SNAPSHOT'
+
+java {
+    // REST Assured 6.x и JUnit 6 требуют Java 17+
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    dependencies {
+        // --- REST Assured (используется в клиентах в src/main/java) ---
+        // Меняем testImplementation на implementation
+        implementation 'io.rest-assured:rest-assured:6.3.0'
+
+        // Валидатор схем (если он используется в клиентах, иначе можно оставить testImplementation)
+        implementation 'io.rest-assured:json-schema-validator:6.3.0'
+
+        // --- Faker (используется в TestDataFactory в src/main/java) ---
+        implementation 'com.github.javafaker:javafaker:1.0.2'
+
+        // --- Jackson (нужен для работы аннотаций @JsonProperty в моделях) ---
+        // REST Assured тянет его транзитивно, но лучше указать явно
+        implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+        // --- Lombok ---
+        compileOnly 'org.projectlombok:lombok:1.18.48'
+        annotationProcessor 'org.projectlombok:lombok:1.18.48'
+
+        // --- JUnit и Hamcrest (используются только в тестах) ---
+        testImplementation platform('org.junit:junit-bom:6.1.3')
+        testImplementation 'org.junit.jupiter:junit-jupiter'
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+        testImplementation 'org.hamcrest:hamcrest:3.0'
+
+        // Логирование (BaseTest в src/test, но slf4j-api может пригодиться в клиентах)
+        implementation 'org.slf4j:slf4j-api:2.0.7'
+        testImplementation 'org.slf4j:slf4j-simple:2.0.7' // или logback
+    }
+}
+
+test {
+    useJUnitPlatform()  // Обязательно для JUnit 5
+    testLogging {
+        events "passed", "skipped", "failed"
+        exceptionFormat "full"
+    }
+}
+

@@ -1,0 +1,44 @@
+name: Java CI with Gradle
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Клонируем репозиторий
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Устанавливаем Java (JDK 17, как в build.gradle)
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'gradle' # Включаем кэширование Gradle для ускорения сборки
+
+      # 3. Настраиваем Gradle (опционально, но рекомендуется для кэширования и отчетов)
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      # 4. Запускаем тесты
+      # Передаем секрет из GitHub Secrets как переменную окружения.
+      # Вспомните, что ConfigManager ищет переменную API_KEY.
+      - name: Run tests with Gradle
+        env:
+          API_KEY: ${{ secrets.REQRES_API_KEY }}
+        run: ./gradlew test
+
+      # 5. Сохраняем HTML-отчеты о тестах как артефакты (даже если тесты упали)
+      - name: Upload Test Reports
+        if: always() # Выполнять этот шаг всегда, даже если предыдущий упал
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: build/reports/tests/test
