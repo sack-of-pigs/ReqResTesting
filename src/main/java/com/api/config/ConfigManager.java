@@ -32,7 +32,19 @@ public final class ConfigManager {
     }
 
     public static String getApiKey() {
-        return resolve("api.key");
+        // 1. Пробуем взять из переменной окружения (для CI)
+        String apiKey = System.getenv("API_KEY");
+        if (apiKey != null && !apiKey.isBlank()) {
+            return apiKey;
+        }
+
+        // 2. Если нет — пробуем взять из файла (для локального запуска)
+        String keyFromFile = PROPERTIES.getProperty("api.key");
+        if (keyFromFile != null && !keyFromFile.isBlank()) {
+            return keyFromFile;
+        }
+
+        throw new IllegalStateException("API key not found. Set API_KEY env var or api.key in config.properties");
     }
 
     // ---------------------------------------------------------------
